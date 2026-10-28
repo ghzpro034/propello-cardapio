@@ -1,8 +1,8 @@
 "use client"
 
-import { ExternalLink, Menu, QrCode, RotateCcw, Store, UtensilsCrossed } from "lucide-react"
+import { ExternalLink, LogOut, Menu, QrCode, RotateCcw, Store, UtensilsCrossed } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import { useNow } from "@/hooks/use-now"
 import { toast } from "sonner"
@@ -10,6 +10,8 @@ import { PropelloSymbol } from "@/components/brand/propello"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { openStatus, type OpenStatus } from "@/lib/format"
 import { resetDemo, useMenu } from "@/lib/store"
+import { supabaseBrowser } from "@/lib/supabase/client"
+import { supabaseEnabled } from "@/lib/supabase/config"
 import { cn } from "@/lib/utils"
 
 const nav = [
@@ -42,6 +44,7 @@ function StatusDot({ status }: { status: OpenStatus | null }) {
 
 function SideNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+  const router = useRouter()
   const { restaurant } = useMenu()
   const status = useOpenStatus()
 
@@ -88,17 +91,31 @@ function SideNav({ onNavigate }: { onNavigate?: () => void }) {
           <ExternalLink className="size-[18px]" strokeWidth={1.75} aria-hidden />
           Ver cardápio
         </a>
-        <button
-          type="button"
-          onClick={() => {
-            resetDemo()
-            toast("Dados de exemplo restaurados")
-          }}
-          className="flex h-10 items-center gap-2.5 rounded-md px-2.5 text-left text-[15px] text-suave transition-colors hover:bg-ativo/60 hover:text-foreground"
-        >
-          <RotateCcw className="size-[18px]" strokeWidth={1.75} aria-hidden />
-          Restaurar exemplo
-        </button>
+        {supabaseEnabled ? (
+          <button
+            type="button"
+            onClick={async () => {
+              await supabaseBrowser().auth.signOut()
+              router.replace("/entrar")
+            }}
+            className="flex h-10 items-center gap-2.5 rounded-md px-2.5 text-left text-[15px] text-suave transition-colors hover:bg-ativo/60 hover:text-foreground"
+          >
+            <LogOut className="size-[18px]" strokeWidth={1.75} aria-hidden />
+            Sair
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              resetDemo()
+              toast("Dados de exemplo restaurados")
+            }}
+            className="flex h-10 items-center gap-2.5 rounded-md px-2.5 text-left text-[15px] text-suave transition-colors hover:bg-ativo/60 hover:text-foreground"
+          >
+            <RotateCcw className="size-[18px]" strokeWidth={1.75} aria-hidden />
+            Restaurar exemplo
+          </button>
+        )}
       </div>
     </div>
   )

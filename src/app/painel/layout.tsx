@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { RemoteGate } from "@/components/painel/remote-gate"
 import { PanelShell } from "@/components/painel/shell"
 
 export const metadata: Metadata = {
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <PanelShell>{children}</PanelShell>
+  return (
+    <RemoteGate>
+      <PanelShell>{children}</PanelShell>
+    </RemoteGate>
+  )
 }

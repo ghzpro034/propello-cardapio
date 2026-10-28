@@ -46,7 +46,7 @@ type Draft = {
 function toDraft(item: Item | null, categoryId: string): Draft {
   if (!item) {
     return {
-      id: uid("item"),
+      id: uid(),
       isNew: true,
       name: "",
       description: "",
@@ -54,8 +54,8 @@ function toDraft(item: Item | null, categoryId: string): Draft {
       price: "",
       sized: false,
       variants: [
-        { id: uid("v"), name: "Pequena", price: "" },
-        { id: uid("v"), name: "Grande", price: "" },
+        { id: uid(), name: "Pequena", price: "" },
+        { id: uid(), name: "Grande", price: "" },
       ],
       extras: [],
       serves: "",
@@ -74,8 +74,8 @@ function toDraft(item: Item | null, categoryId: string): Draft {
     variants: item.variants.length
       ? item.variants.map((v) => ({ id: v.id, name: v.name, price: centsToInput(v.price) }))
       : [
-          { id: uid("v"), name: "Pequena", price: "" },
-          { id: uid("v"), name: "Grande", price: "" },
+          { id: uid(), name: "Pequena", price: "" },
+          { id: uid(), name: "Grande", price: "" },
         ],
     extras: item.extras.map((e) => ({ id: e.id, name: e.name, price: centsToInput(e.price) })),
     serves: item.serves ?? "",
@@ -457,7 +457,7 @@ function RowsEditor({
       <Button
         variant="outline"
         className="self-start"
-        onClick={() => onChange([...rows, { id: uid("r"), name: "", price: "" }])}
+        onClick={() => onChange([...rows, { id: uid(), name: "", price: "" }])}
       >
         <Plus /> {addLabel}
       </Button>
