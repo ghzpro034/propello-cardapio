@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Propello Cardápio
 
-## Getting Started
+Cardápio digital com pedido pelo WhatsApp, para restaurantes e deliveries de Uberlândia.
+Next.js 16 + Tailwind 4 + shadcn/ui, com dois componentes do 21st.dev (QR Code e Quantity Stepper).
 
-First, run the development server:
+## Rodar
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Painel do dono:** http://localhost:3000/painel
+- **Cardápio público (o que o cliente vê pelo QR):** http://localhost:3000/r/quintal-mineiro
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## O que tem
 
-## Learn More
+**Cardápio público** (`/r/[slug]`)
+- Aberto/fechado calculado pelos horários (horário de Brasília) e pelo botão de pausa
+- Busca, abas de categoria que acompanham a rolagem, itens esgotados marcados
+- Prato com tamanhos, adicionais, observação e quantidade
+- Sacola (gaveta no celular, coluna fixa no computador), pedido mínimo, entrega ou retirada
+- Fechamento com nome, endereço e pagamento (Pix, dinheiro com troco, cartão) que abre o
+  WhatsApp do restaurante com a mensagem do pedido pronta
 
-To learn more about Next.js, take a look at the following resources:
+**Painel** (`/painel`)
+- Cardápio: itens por categoria, liga/desliga "à venda" numa tecla, editar, duplicar,
+  mudar ordem, criar/renomear/excluir categoria, pausar pedidos
+- Restaurante: dados, WhatsApp, taxa e tempo de entrega, pedido mínimo, horários por dia,
+  formas de pagamento e cor do cardápio (salva sozinho)
+- Link e QR code: copiar link, baixar QR em PNG/SVG e imprimir o display de mesa A6
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Importante: ainda sem back-end
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Os dados ficam no `localStorage` do navegador (`src/lib/store.ts`). Painel e cardápio
+conversam entre abas do mesmo navegador, mas **não** entre aparelhos. Para virar SaaS de
+verdade falta: banco + API, login do dono, várias lojas por conta, upload de fotos e
+domínio próprio. A interface de `menuStore` foi feita para trocar só o `load`/`persist`.
 
-## Deploy on Vercel
+## Dados de exemplo para trocar
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Tudo em `src/lib/seed.ts` é fictício: o restaurante "Quintal Mineiro", endereço
+"Rua Exemplo, 123", WhatsApp (34) 99999-0000, pratos, preços e horários.
+O botão "Restaurar exemplo" no painel volta para esses dados.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Componentes
+
+- shadcn/ui (código oficial em `src/components/ui`), ajustado à marca: Archivo, cantos
+  4/8px, sem sombra em nada parado, laranja `#FF5B1F` com texto carvão
+- 21st.dev: `qr-code.tsx` (@kevingirelli) e `quantity-stepper.tsx` (@arihantcodes),
+  adaptados para português e para a marca

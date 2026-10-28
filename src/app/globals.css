@@ -1,26 +1,176 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Propello — laranja impulso.
+ * Tokens da marca (guia out/2026) mapeados para os papéis do shadcn.
+ * Cantos 4px (controles) e 8px (cartões); sem sombra em nada que fica parado.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --laranja: #ff5b1f;
+  --carvao: #17181a;
+  --creme: #f6efe6;
+  --petroleo: #0e4446;
+
+  --superficie: #f6efe6;
+  --superficie-elevada: #fffbf6;
+  --texto: #17181a;
+  --texto-suave: #5c5750;
+  --destaque-texto: #b8400f;
+  --linha: #e2d7c9;
+  --linha-fraca: #ece3d7;
+  --borda-controle: #8c8478;
+  --ativo: #ebe2d6;
+  --positivo: #2f6b3a;
+  --negativo: #a3242c;
+  --pill-negativo-bg: #f8e3df;
+  --pill-negativo-ink: #7d1b22;
+
+  /* cor do restaurante no cardápio público (o painel usa o laranja) */
+  --marca: var(--laranja);
+  --sobre-marca: var(--carvao);
+  --marca-texto: var(--destaque-texto);
+
+  --radius: 0.5rem;
+
+  /* papéis do shadcn */
+  --background: var(--superficie);
+  --foreground: var(--texto);
+  --card: var(--superficie-elevada);
+  --card-foreground: var(--texto);
+  --popover: var(--superficie-elevada);
+  --popover-foreground: var(--texto);
+  --primary: var(--laranja);
+  --primary-foreground: var(--carvao);
+  --secondary: var(--ativo);
+  --secondary-foreground: var(--texto);
+  --muted: var(--ativo);
+  --muted-foreground: var(--texto-suave);
+  --accent: var(--ativo);
+  --accent-foreground: var(--texto);
+  --destructive: var(--negativo);
+  --border: var(--linha);
+  --input: var(--borda-controle);
+  --ring: var(--carvao);
 }
 
 @theme inline {
+  --font-sans: "Archivo Variable", Archivo, "Arial Narrow", Arial, sans-serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-laranja: var(--laranja);
+  --color-carvao: var(--carvao);
+  --color-creme: var(--creme);
+  --color-petroleo: var(--petroleo);
+  --color-elevada: var(--superficie-elevada);
+  --color-suave: var(--texto-suave);
+  --color-destaque: var(--destaque-texto);
+  --color-linha: var(--linha);
+  --color-linha-fraca: var(--linha-fraca);
+  --color-controle: var(--borda-controle);
+  --color-ativo: var(--ativo);
+  --color-positivo: var(--positivo);
+  --color-negativo: var(--negativo);
+  --color-marca: var(--marca);
+  --color-sobre-marca: var(--sobre-marca);
+  --color-marca-texto: var(--marca-texto);
+
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* anel de foco da marca: 2px, afastado 2px */
+  :focus-visible {
+    outline: 2px solid var(--carvao);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--laranja);
+    color: var(--carvao);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* faixa de impulso: barra laranja a -20° atrás de UMA palavra */
+.sublinhado {
+  position: relative;
+  z-index: 0;
+  white-space: nowrap;
+}
+.sublinhado::after {
+  content: "";
+  position: absolute;
+  left: -0.08em;
+  right: -0.08em;
+  bottom: 0.04em;
+  height: 0.27em;
+  background: var(--laranja);
+  transform: skewX(-20deg);
+  z-index: -1;
+}
+
+/* rolagem horizontal sem barra (abas de categoria) */
+.sem-barra {
+  scrollbar-width: none;
+}
+.sem-barra::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .nao-imprimir {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
 }
