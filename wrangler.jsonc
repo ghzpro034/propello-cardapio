@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "propello-cardapio",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    // auto-referência usada pelo cache do OpenNext; o nome tem que ser igual ao do worker
+    { "binding": "WORKER_SELF_REFERENCE", "service": "propello-cardapio" }
+  ],
+  "r2_buckets": [
+    // criar antes do primeiro deploy: npx wrangler r2 bucket create propello-cardapio-cache
+    { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "propello-cardapio-cache" }
+  ],
+  "d1_databases": [
+    // criar antes do primeiro deploy: npx wrangler d1 create propello-cardapio-tags
+    // e colar aqui o database_id que o comando mostrar
+    { "binding": "NEXT_TAG_CACHE_D1", "database_name": "propello-cardapio-tags", "database_id": "COLE_AQUI_O_ID_DO_D1" }
+  ]
+}

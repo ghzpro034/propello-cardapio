@@ -27,7 +27,7 @@ export function duplicateItem(itemId: string) {
   menuStore.set((s) => {
     const idx = s.items.findIndex((i) => i.id === itemId)
     if (idx < 0) return s
-    const copy = { ...s.items[idx], id: uid("item"), name: `${s.items[idx].name} (cópia)` }
+    const copy = { ...s.items[idx], id: uid(), name: `${s.items[idx].name} (cópia)` }
     const items = [...s.items]
     items.splice(idx + 1, 0, copy)
     return { ...s, items }
@@ -52,7 +52,7 @@ export function moveItem(itemId: string, dir: -1 | 1) {
 }
 
 export function addCategory(name: string): Category {
-  const cat = { id: uid("cat"), name: name.trim() }
+  const cat = { id: uid(), name: name.trim() }
   menuStore.set((s) => ({ ...s, categories: [...s.categories, cat] }))
   return cat
 }

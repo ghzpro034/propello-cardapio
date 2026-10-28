@@ -14,7 +14,7 @@ import { accentVars } from "@/lib/accent"
 import { resolveCart } from "@/lib/cart"
 import { itemFromPrice, money, openStatus, plural, statusLine } from "@/lib/format"
 import { useCart, useMenu } from "@/lib/store"
-import type { Item, Restaurant } from "@/lib/types"
+import type { Item, MenuState, Restaurant } from "@/lib/types"
 import { paymentLabels } from "@/lib/cart"
 import { weekdayNames, weekdayOrder } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -26,8 +26,10 @@ function normalize(s: string) {
     .toLowerCase()
 }
 
-export function PublicMenu({ slug }: { slug: string }) {
-  const menu = useMenu()
+/** Com Supabase o servidor passa `initial`; no modo demonstração lê do localStorage. */
+export function PublicMenu({ slug, initial }: { slug: string; initial?: MenuState }) {
+  const stored = useMenu()
+  const menu = initial ?? stored
   const cart = useCart()
   const r = menu.restaurant
   const style = accentVars(r.accent)

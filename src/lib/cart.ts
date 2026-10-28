@@ -39,7 +39,7 @@ export function addToCart(line: Omit<CartLine, "key">) {
         l.extraIds.slice().sort().join() === line.extraIds.slice().sort().join(),
     )
     if (same) return prev.map((l) => (l === same ? { ...l, qty: l.qty + line.qty } : l))
-    return [...prev, { ...line, key: uid("linha") }]
+    return [...prev, { ...line, key: uid() }]
   })
 }
 

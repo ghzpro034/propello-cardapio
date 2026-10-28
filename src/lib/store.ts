@@ -5,10 +5,10 @@ import { seed } from "./seed"
 import type { CartLine, MenuState } from "./types"
 
 /**
- * Sem back-end por enquanto: o cardápio fica no localStorage do navegador.
- * O painel e o cardápio público leem o mesmo estado, então uma mudança no
- * painel aparece no cardápio aberto em outra aba. Quando houver API, trocar
- * `load`/`persist` por chamadas ao servidor e manter a mesma interface.
+ * Modo demonstração (sem Supabase): o cardápio fica no localStorage do navegador
+ * e painel e cardápio conversam entre abas. Com Supabase, o painel chama
+ * `menuStore.hydrate` com os dados do banco e `src/lib/sync.ts` grava cada
+ * mudança; a interface do store continua a mesma para as telas.
  */
 const KEY = "propello-cardapio:v1"
 const CART_KEY = "propello-cardapio:sacola:v1"
@@ -18,10 +18,12 @@ type Listener = () => void
 function createStore<T>(key: string, initial: T) {
   let state: T = initial
   let loaded = false
+  // com Supabase o painel recebe o estado do banco e não usa o localStorage
+  let remote = false
   const listeners = new Set<Listener>()
 
   function load() {
-    if (loaded || typeof window === "undefined") return
+    if (loaded || remote || typeof window === "undefined") return
     loaded = true
     try {
       const raw = window.localStorage.getItem(key)
@@ -32,6 +34,7 @@ function createStore<T>(key: string, initial: T) {
   }
 
   function persist() {
+    if (remote) return
     try {
       window.localStorage.setItem(key, JSON.stringify(state))
     } catch {
@@ -45,7 +48,7 @@ function createStore<T>(key: string, initial: T) {
 
   if (typeof window !== "undefined") {
     window.addEventListener("storage", (e) => {
-      if (e.key !== key) return
+      if (e.key !== key || remote) return
       try {
         state = e.newValue ? (JSON.parse(e.newValue) as T) : initial
       } catch {
@@ -67,6 +70,12 @@ function createStore<T>(key: string, initial: T) {
       load()
       state = typeof next === "function" ? (next as (p: T) => T)(state) : next
       persist()
+      emit()
+    },
+    /** Troca o estado pelo que veio do banco, sem passar pelo localStorage. */
+    hydrate(next: T) {
+      remote = true
+      state = next
       emit()
     },
     subscribe(l: Listener) {
@@ -92,6 +101,13 @@ export function resetDemo() {
   cartStore.set([])
 }
 
-export function uid(prefix = "id") {
-  return `${prefix}-${Math.random().toString(36).slice(2, 8)}`
+/** UUID v4, que é o formato das chaves no banco. */
+export function uid() {
+  if (typeof crypto.randomUUID === "function") return crypto.randomUUID()
+  // randomUUID só existe em HTTPS/localhost; pelo IP da rede (teste no celular) monta na mão
+  const b = crypto.getRandomValues(new Uint8Array(16))
+  b[6] = (b[6] & 0x0f) | 0x40
+  b[8] = (b[8] & 0x3f) | 0x80
+  const h = Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("")
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`
 }
